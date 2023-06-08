@@ -159,19 +159,14 @@ nav ul li {
 }
 
 @media (max-width:767px) {
-    .intro-container {
-        flex-direction: column;
-        gap: 2rem;
+    .intro-container img {
+        width: 35%;
     }
 
     .intro-container .intro {
         width: 100%;
         margin: 0 2rem;
         text-align: center;
-    }
-
-    .intro-container img {
-        width: 50%;
     }
 
     h1 {
@@ -202,6 +197,10 @@ nav ul li {
 
     .menu-btn {
         display: block;
+    }
+
+    .intro-container img {
+        display: none;
     }
 }
 
