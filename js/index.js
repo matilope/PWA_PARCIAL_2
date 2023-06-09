@@ -123,8 +123,9 @@ async function petition(section, search, page) {
     spinner(false);
     if (Response == "True") {
       intersectionObserverApi(search, page);
-    } else {
+    } else if (Response == "False" && page <= 1) {
       errorFeedback(section, false);
+      return;
     }
   }
   catch (error) {
@@ -434,23 +435,26 @@ function paginado(section, data, min, max) {
 }
 
 function spinner(state) {
+  let spinnerContainer = document.querySelector(".spinner-container");
   if (!state) {
-    document.querySelector(".spinner-container")?.remove();
+    spinnerContainer?.remove();
   } else {
-    let container = document.createElement("div");
-    let div = document.createElement("div");
-    let span = document.createElement("span");
+    if (!spinnerContainer) {
+      let container = document.createElement("div");
+      let div = document.createElement("div");
+      let span = document.createElement("span");
 
-    div.classList.add("spinner-border", "text-light");
-    div.style = "width: 4rem; height:4rem;";
-    div.setAttribute("role", "status");
+      div.classList.add("spinner-border", "text-light");
+      div.style = "width: 4rem; height:4rem;";
+      div.setAttribute("role", "status");
 
-    container.classList.add("spinner-container", "mt-3");
-    span.classList.add("visually-hidden");
-    span.textContent = "Cargando...";
+      container.classList.add("spinner-container", "mt-3");
+      span.classList.add("visually-hidden");
+      span.textContent = "Cargando...";
 
-    document.querySelector("main").appendChild(container);
-    container.append(div, span);
+      document.querySelector("main").appendChild(container);
+      container.append(div, span);
+    }
   }
 }
 
