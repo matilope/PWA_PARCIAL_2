@@ -2,14 +2,6 @@ const APIKEY = "5f52a7aa";
 const main = document.querySelector("main");
 let observer = null;
 
-function getLocal() {
-  const data = JSON.parse(localStorage.getItem("ver-mas-tarde"));
-  if (!data) {
-    localStorage.setItem("ver-mas-tarde", JSON.stringify([]));
-  }
-  return data || [];
-}
-
 function toggleMenu() {
   const menuBtn = document.querySelector('.menu-btn');
   const navMenu = document.querySelector('nav ul');
@@ -101,15 +93,16 @@ async function petition(section, search, page) {
       div.classList.add("search-body");
       icon.classList.add("bi", "bi-plus-circle");
       icon.setAttribute("title", "Agregar a la lista");
+      icon.setAttribute("data-id", Search[i].imdbID);
 
       h3.setAttribute("title", Search[i].Title);
       h3.textContent = Search[i].Title;
       img.src = Search[i].Poster == 'N/A' ? 'imagenes/default/default.png' : Search[i].Poster;
       span.textContent = `Película (${Search[i].Year})`;
 
-      let data = getLocal();
-      const dataFilter = data.filter(item => item.imdbID == Search[i].imdbID);
-      if (dataFilter.length > 0 && icon.classList.contains("bi-plus-circle")) {
+      const dataFilter = await database.getMovie(Search[i].imdbID);
+      console.log(dataFilter);
+      if (dataFilter && icon.classList.contains("bi-plus-circle")) {
         icon.classList.remove("bi-plus-circle");
         icon.classList.add("bi-dash-circle");
         icon.setAttribute("title", "Quitar de la lista");
@@ -135,28 +128,23 @@ async function petition(section, search, page) {
   }
 }
 
-function addAndRemove(icon, searchItem) {
-  let data = getLocal();
-  const dataFilter = data.filter(item => item.imdbID == searchItem.imdbID);
-
-  if (dataFilter.length > 0) {
+async function addAndRemove(icon, searchItem) {
+  const id = icon.getAttribute("data-id");
+  const alreadyExists = await database.getMovie(id);
+  if (alreadyExists) {
     icon.classList.remove("bi-dash-circle");
     icon.classList.add("bi-plus-circle");
     icon.setAttribute("title", "Agregar a la lista");
-    const index = data.indexOf(dataFilter[0]);
-    data.splice(index, 1);
-    localStorage.setItem("ver-mas-tarde", JSON.stringify(data));
+    await database.deleteMovie(id);
     alertMessage(false, "Se ha quitado de la lista", "bi-check2-circle");
   } else {
     icon.classList.remove("bi-plus-circle");
     icon.classList.add("bi-dash-circle");
     icon.setAttribute("title", "Quitar de la lista");
     searchItem.Poster = searchItem.Poster == "N/A" ? "imagenes/default/default.png" : searchItem.Poster;
-    data.unshift(searchItem);
-    localStorage.setItem("ver-mas-tarde", JSON.stringify(data));
+    await database.saveMovie(searchItem);
     alertMessage(false, "Se ha agregado a la lista", "bi-check2-circle");
   }
-  data = getLocal();
 }
 
 function home() {
@@ -217,11 +205,11 @@ function home() {
   }
 }
 
-function list() {
+async function list() {
   Array.from(main.children)?.forEach(e => e?.remove());
   main.classList.remove("main-game");
   let h2 = document.createElement("h2");
-  const data = getLocal();
+  const data = await database.getMovies();
 
   if (!data.length) {
     let p = document.createElement("p");
@@ -400,14 +388,10 @@ function paginado(section, data, min, max) {
       button.setAttribute('data-title', `${data[min].Title} - ${data[min].Year}`);
 
       remove.addEventListener("click", (e) => {
-        alertMessage(true, "¿Queres quitarla de la lista?", "bi-exclamation-circle", (accept) => {
+        alertMessage(true, "¿Queres quitarla de la lista?", "bi-exclamation-circle", async (accept) => {
           if (accept) {
-            const local = getLocal();
             const id = e.target.getAttribute('data-id');
-            const filtrado = local.filter(item => item.imdbID == id)[0];
-            const index = local.indexOf(filtrado);
-            local.splice(index, 1);
-            localStorage.setItem("ver-mas-tarde", JSON.stringify(local));
+            await database.deleteMovie(id);
             alertMessage(false, "Se ha quitado de la lista", "bi-check2-circle");
             list();
           } else {
