@@ -101,7 +101,6 @@ async function petition(section, search, page) {
       span.textContent = `Película (${Search[i].Year})`;
 
       const dataFilter = await database.getMovie(Search[i].imdbID);
-      console.log(dataFilter);
       if (dataFilter && icon.classList.contains("bi-plus-circle")) {
         icon.classList.remove("bi-plus-circle");
         icon.classList.add("bi-dash-circle");

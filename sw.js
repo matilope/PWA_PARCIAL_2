@@ -2,7 +2,8 @@ const CACHE_NAME = 'Pelitra-v1';
 const IMAGES_CACHE = [
     '/imagenes/result/draw.png',
     '/imagenes/result/loser.png',
-    '/imagenes/result/winner.png'
+    '/imagenes/result/winner.png',
+    'imagenes/list/no-list.png'
 ];
 
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
