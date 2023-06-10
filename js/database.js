@@ -8,7 +8,12 @@ class Database {
     }
 
     async init() {
-        await this.db.open();
+        try {
+            await this.db.open();
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
 
     async getMovies() {

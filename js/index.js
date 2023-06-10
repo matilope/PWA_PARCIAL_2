@@ -115,7 +115,7 @@ async function petition(section, search, page) {
     spinner(false);
     if (Response == "True") {
       intersectionObserverApi(search, page);
-    } else if (Response == "False" && page <= 1) {
+    } else if (Response == "False" && page == 1) {
       errorFeedback(section, false);
       return;
     }
